@@ -1,0 +1,11 @@
+
+&INPUT
+   N = 164
+   itermax = 10000
+   T0 = 10.
+   tolerance = 0.0
+   output = 1
+   algorithm = 2
+   full = 0
+/
+

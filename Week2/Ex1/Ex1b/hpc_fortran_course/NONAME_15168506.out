@@ -1,0 +1,46 @@
+Modules Release 4.8.0 (2021-07-14)
+DCC-SW: Added modules (2021-nov/XeonGold6126)
+DCC-SW: Removed standard modules: /apps/dcc/etc/ModulesSL73/modulefiles
+DCC-SW: Using gnu/11.2.0 compiler
+DCC-SW: Released modules (2021-nov/XeonGold6126)
+DCC-SW: Added modules (2020-aug/XeonGold6126)
+DCC-SW: Removed standard modules: /apps/dcc/etc/ModulesSL73/modulefiles
+DCC-SW: Using gnu/9.3.0 compiler
+/bin/bash: ./sub.sh: Permission denied
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@hpc.dtu.dk>
+Subject: Job 15168506: <NONAME> in cluster <dcc> Exited
+
+Job <NONAME> was submitted from host <n-62-27-18> by user <podabb> in cluster <dcc> at Tue Jan 10 16:36:53 2023
+Job was executed on host(s) <n-62-31-22>, in queue <hpc>, as user <podabb> in cluster <dcc> at Tue Jan 10 16:36:55 2023
+</zhome/6d/0/188663> was used as the home directory.
+</zhome/6d/0/188663/hpc_fortran_course> was used as the working directory.
+Started at Tue Jan 10 16:36:55 2023
+Terminated at Tue Jan 10 16:36:56 2023
+Results reported at Tue Jan 10 16:36:56 2023
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+sub.sh
+------------------------------------------------------------
+
+Exited with exit code 126.
+
+Resource usage summary:
+
+    CPU time :                                   1.16 sec.
+    Max Memory :                                 -
+    Average Memory :                             -
+    Total Requested Memory :                     1024.00 MB
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              -
+    Max Threads :                                -
+    Run time :                                   93 sec.
+    Turnaround time :                            3 sec.
+
+The output (if any) is above this job summary.
+

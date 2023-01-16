@@ -1,0 +1,127 @@
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                24
+On-line CPU(s) list:   0-23
+Thread(s) per core:    1
+Core(s) per socket:    12
+Socket(s):             2
+NUMA node(s):          2
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 79
+Model name:            Intel(R) Xeon(R) CPU E5-2650 v4 @ 2.20GHz
+Stepping:              1
+CPU MHz:               1223.400
+CPU max MHz:           2900.0000
+CPU min MHz:           1200.0000
+BogoMIPS:              4389.78
+Virtualization:        VT-x
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              30720K
+NUMA node0 CPU(s):     0-11
+NUMA node1 CPU(s):     12-23
+Flags:                 fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch epb cat_l3 cdp_l3 invpcid_single intel_ppin ssbd rsb_ctxsw ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm cqm rdt_a rdseed adx smap intel_pt xsaveopt cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local dtherm ida arat pln pts md_clear spec_ctrl intel_stibp flush_l1d
+gfortran -c -O3 -ffast-math -funroll-loops -fopenmp -ffree-form precision.f90
+gfortran -c -O3 -ffast-math -funroll-loops -fopenmp -ffree-form poisson_methods.f90
+gcc -c write_vtk.c
+gfortran -c -O3 -ffast-math -funroll-loops -fopenmp -ffree-form poisson_utils.f90
+gfortran -c -O3 -ffast-math -funroll-loops -fopenmp -ffree-form poisson3d.f90
+gfortran -O3 -ffast-math -funroll-loops -fopenmp -ffree-form poisson3d.o precision.o poisson_methods.o poisson_utils.o write_vtk.o -o poisson3d
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@hpc.dtu.dk>
+Subject: Job 15187959: <My_job> in cluster <dcc> Exited
+
+Job <My_job> was submitted from host <hpclogin1> by user <podabb> in cluster <dcc> at Sun Jan 15 02:15:00 2023
+Job was executed on host(s) <24*n-62-21-92>, in queue <hpc>, as user <podabb> in cluster <dcc> at Sun Jan 15 02:15:01 2023
+</zhome/6d/0/188663> was used as the home directory.
+</zhome/6d/0/188663/hpc_fortran_course/Assignment2/Poisson3D_OMP_V0.2.0> was used as the working directory.
+Started at Sun Jan 15 02:15:01 2023
+Terminated at Sun Jan 15 02:15:15 2023
+Results reported at Sun Jan 15 02:15:15 2023
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#!/bin/bash
+
+# https://www.hpc.dtu.dk/?page_id=1416
+#BSUB -q hpc
+# use the same CPU model as the hpcintro queue
+#BSUB -R "select[model == XeonE5_2650v4]"
+#BSUB -J My_job
+# ask for 24 cores (a full node)
+#BSUB -n 24
+#BSUB -R "span[hosts=1]"
+#BSUB -R "rusage[mem=2GB]"
+#BSUB -W 180
+#BSUB -o Output_%J.out
+#BSUB -e Error_%J.err
+
+# Set these before running (and uncomment)
+# export OMP_PLACES=
+
+export OMP_DISPLAY_ENV=verbose
+export OMP_PROC_BIND=true
+
+module load gcc/10.3.0-binutils-2.36.1
+lscpu
+# make new
+
+# #Jacobi
+itermax=10000
+
+# # make one full data to ensure the results are correct
+# cat > input.dat <<- END
+
+# &INPUT
+#   N = 100
+#   itermax = ${itermax}
+#   T0 = 10.
+#   tolerance = 1e-5
+#   output = 1
+#   algorithm = 1
+#   full = 1
+# /
+
+# END
+
+# OMP_NUM_THREADS=16 ./poisson3d fulldata_jacobi.dat
+
+# # loop over different number of threads (adjust list if needed)
+# for thr in 1 2 4 8 12 16 24
+# do
+#    export OMP_NUM_THREADS=$thr
+    
+
+(... more ...)
+------------------------------------------------------------
+
+TERM_OWNER: job killed by owner.
+Exited with exit code 130.
+
+Resource usage summary:
+
+    CPU time :                                   102.61 sec.
+    Max Memory :                                 12 MB
+    Average Memory :                             8.67 MB
+    Total Requested Memory :                     49152.00 MB
+    Delta Memory :                               49140.00 MB
+    Max Swap :                                   -
+    Max Processes :                              4
+    Max Threads :                                20
+    Run time :                                   14 sec.
+    Turnaround time :                            15 sec.
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <Error_15187959.err> for stderr output of this job.
+

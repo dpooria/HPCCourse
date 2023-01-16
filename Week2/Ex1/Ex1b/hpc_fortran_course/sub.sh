@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# https://www.hpc.dtu.dk/?page_id=1416
+#BSUB -q hpc
+# use the same CPU model as the hpcintro queue
+#BSUB -R "select[model == XeonE5_2650v4]"
+#BSUB -J My_job
+# ask for 24 cores (a full node)
+#BSUB -n 24
+#BSUB -R "span[hosts=1]"
+#BSUB -R "rusage[mem=2GB]"
+#BSUB -W 30
+#BSUB -o Output_%J.out
+#BSUB -e Error_%J.err 
+
+# add your module, if needed, and uncomment
+#module load ...
+
+# If you want to see the HW specs, uncomment the next line
+#lscpu
+
+# Set these before running (and uncomment)
+# export OMP_PLACES=
+# export OMP_PROC_BIND=
+
+# Optional, it will print the OMP environment settings in the error file
+# export OMP_DISPLAY_ENV=true
+
+# loop over different number of threads (adjust list if needed)
+#
+#for thr in 1 2 4 8 12 16 24 
+#do
+#    export OMP_NUM_THREADS=$thr
+
+ #   echo "Running with $OMP_NUM_THREADS threads"
+    # The call to your program, here
+  #  ./my_prog ...
+#done
+module load gcc
+make new
+make run
+
+

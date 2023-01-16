@@ -1,0 +1,24 @@
+
+MODULE m_Ex3b
+   USE m_Ex3b_precision
+   IMPLICIT NONE
+   INTEGER :: Nx, Ny, Nt !mesh and time
+   REAL(MK) :: Dx, Dy, Dt, FL !Deltas and the Fouriere limit
+   REAL(MK), DIMENSION(:, :), ALLOCATABLE, TARGET :: temp_new, temp_old ! Temperature
+
+! CONTAINS
+
+!  SUBROUTINE euler_step(i, j, D)
+!       INTEGER, INTENT(IN) :: i, j
+!       REAL(MK), OPTIONAL :: D
+
+!       IF (.NOT. PRESENT(D)) THEN
+!          D = 1.0_MK
+!       ENDIF
+!       temp_new(i, j) = Dt * D * &
+!          ((temp_old(i + 1, j) - 2.0_MK * temp_old(i, j) + temp_old(i - 1, j)) / (Dx**2) &
+!          + (temp_old(i, j+1) - 2.0_MK * temp_old(i, j) + temp_old(i, j - 1)) / (Dy**2)) &
+!          + temp_old(i, j)
+!    END SUBROUTINE euler_step
+
+END MODULE m_EX3b

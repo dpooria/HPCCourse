@@ -1,0 +1,8 @@
+Ex1a.f95:8:38:
+
+    6 |    DO i=1,n
+      |           2                           
+    7 |       IF (i.EQ.j) EXIT
+    8 |       i = i + 10 ! does this compile ?
+      |                                      1
+Error: Variable ‘i’ at (1) cannot be redefined inside loop beginning at (2)
