@@ -1,0 +1,120 @@
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                24
+On-line CPU(s) list:   0-23
+Thread(s) per core:    1
+Core(s) per socket:    12
+Socket(s):             2
+NUMA node(s):          2
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 79
+Model name:            Intel(R) Xeon(R) CPU E5-2650 v4 @ 2.20GHz
+Stepping:              1
+CPU MHz:               2499.975
+CPU max MHz:           2900.0000
+CPU min MHz:           1200.0000
+BogoMIPS:              4389.83
+Virtualization:        VT-x
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              30720K
+NUMA node0 CPU(s):     0-11
+NUMA node1 CPU(s):     12-23
+Flags:                 fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch epb cat_l3 cdp_l3 invpcid_single intel_ppin ssbd rsb_ctxsw ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm cqm rdt_a rdseed adx smap intel_pt xsaveopt cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local dtherm ida arat pln pts md_clear spec_ctrl intel_stibp flush_l1d
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@hpc.dtu.dk>
+Subject: Job 15204467: <My_job> in cluster <dcc> Exited
+
+Job <My_job> was submitted from host <hpclogin1> by user <podabb> in cluster <dcc> at Tue Jan 17 16:18:45 2023
+Job was executed on host(s) <n-62-21-98>, in queue <hpc>, as user <podabb> in cluster <dcc> at Tue Jan 17 16:18:47 2023
+</zhome/6d/0/188663> was used as the home directory.
+</zhome/6d/0/188663/hpc_fortran_course/HPCCourse/Week3/ExcerciseDay11> was used as the working directory.
+Started at Tue Jan 17 16:18:47 2023
+Terminated at Tue Jan 17 16:18:48 2023
+Results reported at Tue Jan 17 16:18:48 2023
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#!/bin/bash
+
+# https://www.hpc.dtu.dk/?page_id=1416
+#BSUB -q hpc
+# use the same CPU model as the hpcintro queue
+#BSUB -R "select[model == XeonE5_2650v4]"
+#BSUB -J My_job
+# ask for 24 cores (a full node)
+#BSUB -n 1
+# #BSUB -R "span[hosts=1]"
+#BSUB -R "rusage[mem=2GB]"
+#BSUB -W 180
+#BSUB -o Output_%J.out
+#BSUB -e Error_%J.err 
+
+module add studio
+lscpu
+
+#Jacobi
+# make one full data to ensure the results are correct
+cat > sample_input.txt <<- END
+
+Nt = 100
+Nx = 4097
+Ny = 4097
+D = 1.0
+Dt = 1E-4
+vb = .FALSE.
+
+END
+
+# version v1: unmodified from the excercise day5
+# version v2: v1 with Pointers insted of allocatable
+# version v3: Making improvements on v1 (defining temporary variables and subsitiuting division with multipilication)
+# Change optimization level
+
+#single vs double precisions
+for MK in MKS MKD
+do
+# different versions
+for v in v1 v2 v3
+do
+cat > ./src/${v}/m_Diffusion_precision.f90 <<- E
+
+MODULE m_Diffusion_precision
+   INTEGER, PARAMETER :: MKS = KIND(1.0E0)
+   INTEGER, PARAMETER :: MKD = KIND(1.0D0)
+   INTEGER, PARAMETER :: MK = ${MK}
+END MODULE m_Diffusion_precision
+
+
+(... more ...)
+------------------------------------------------------------
+
+Exited with exit code 2.
+
+Resource usage summary:
+
+    CPU time :                                   0.50 sec.
+    Max Memory :                                 -
+    Average Memory :                             -
+    Total Requested Memory :                     2048.00 MB
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              -
+    Max Threads :                                -
+    Run time :                                   0 sec.
+    Turnaround time :                            3 sec.
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <Error_15204467.err> for stderr output of this job.
+

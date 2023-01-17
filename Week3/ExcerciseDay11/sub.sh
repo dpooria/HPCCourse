@@ -56,11 +56,8 @@ make SRC=./src/${v} OPT="-${o}" new
 ./Diffusion ./outputs/${v}_${o}_only_${MK}_.txt
 make SRC=./src/${v} OPT="-${o} -fast -xvector=simd" new
 ./Diffusion ./outputs/${v}_${o}_wtihotheroptimizations_${MK}_.txt
-
 done
-
-
-
+done
 done
 
 
