@@ -8,12 +8,14 @@
 # ask for 24 cores (a full node)
 #BSUB -n 1
 # #BSUB -R "span[hosts=1]"
+#BSUB -R "span[ptile=1]"
 #BSUB -R "rusage[mem=2GB]"
 #BSUB -W 180
 #BSUB -o Output_%J.out
 #BSUB -e Error_%J.err 
 
-module add studio
+module load gcc/11.3.0-binutils-2.38
+#module add mpi/4.1.4-gcc-11.3.0-binutils-2.38
 lscpu
 
 #Jacobi
@@ -54,7 +56,7 @@ for o in O0 O1 O2 O3 O4
 do
 make SRC=./src/${v} OPT="-${o}" new
 ./Diffusion ./outputs/${v}_${o}_only_${MK}_.txt
-make SRC=./src/${v} OPT="-${o} -fast -xvector=simd" new
+make SRC=./src/${v} OPT="-${o} -ffast-math -funroll-loops" new
 ./Diffusion ./outputs/${v}_${o}_wtihotheroptimizations_${MK}_.txt
 done
 done

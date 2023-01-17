@@ -14,14 +14,14 @@ TARGET      = Diffusion
 #----------------------------------------------------------------------
 #  Compiler settings (Linux)
 #----------------------------------------------------------------------
-# F77         = gfortran
-F77         = f90
+F77         = gfortran
+# F77         = f90
 CC          = cc
 DEBUG       = -C
 DEBUG       = 
 OPT         = -O3
-FFLAGS      = $(OPT) -free $(DEBUG)
-# FFLAGS      = $(OPT) -ffree-form $(DEBUG)
+# FFLAGS      = $(OPT) -free $(DEBUG)
+FFLAGS      = $(OPT) -ffree-form $(DEBUG)
 CFLAGS      = -O
 LD          = $(F77)
 LDFLAGS     = 
