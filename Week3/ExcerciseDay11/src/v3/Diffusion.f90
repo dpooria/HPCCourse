@@ -18,6 +18,7 @@ PROGRAM Diffusion
    CHARACTER(LEN=10) :: time
    CHARACTER(LEN=8) :: date
    CHARACTER(LEN=128) :: output
+   REAL(MK) :: Dx_coeff, Dy_coeff
    CALL GET_COMMAND_ARGUMENT(number=1, value=output)
    IF(LEN_TRIM(output) .eq. 0) THEN
       CALL  get_command_argument(number=0, value=output)
@@ -87,6 +88,8 @@ PROGRAM Diffusion
       PRINT *, "Dx = ", Dx, ";Dy = ", Dy, ";Dt = ", Dt
    ENDIF
    WRITE(u, *) "Dx = ", Dx, ";Dy = ", Dy, ";Dt = ", Dt
+   Dx_coeff = Dt * D / Dx**2
+   Dy_coeff = Dt * D / Dy**2
 
    ! Initialize
    ! temp(:, :) = 0.0_MK
@@ -108,9 +111,8 @@ PROGRAM Diffusion
       DO j = 2, Ny - 1
          DO i = 2, Nx - 1
             ! CALL euler_step(i, j)
-            temp_new(i, j) = Dt * D * &
-               ((temp_old(i + 1, j) - 2.0_MK * temp_old(i, j) + temp_old(i - 1, j)) / (Dx**2) &
-               + (temp_old(i, j+1) - 2.0_MK * temp_old(i, j) + temp_old(i, j - 1)) / (Dy**2)) &
+            temp_new(i, j) = Dx_coeff * (temp_old(i + 1, j) - 2.0_MK * temp_old(i, j) + temp_old(i - 1, j)) &
+               + Dy_coeff * (temp_old(i, j+1) - 2.0_MK * temp_old(i, j) + temp_old(i, j - 1)) &
                + temp_old(i, j)
          ENDDO
       ENDDO
