@@ -14,9 +14,11 @@
 module add studio
 module add mpi/3.1.3-oracle-12u6
 
-mpif90 -free hello_world.f90 -o hello_world
+echo "**************HelloWorld***************"
+
+mpif90 -free -O3 hello_world.f90 -o hello_world
 mpirun -n 2 ./hello_world
 
-
-mpif90 -free ping_pong.f90 -o ping_pong
-mpirun -n 2 ./ping_pong
+echo "**************PingPong!***************"
+mpif90 -free -O3 ping_pong.f90 -o ping_pong
+mpirun -np 2 ./ping_pong
