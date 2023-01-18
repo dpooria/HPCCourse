@@ -14,13 +14,12 @@ PROGRAM hello_world
 
       IF(p_rank==0) PRINT*, 'Hello World from rank ', p_rank
 
-      DO i = 0,1
+      DO i = 0, c_size-1
       IF(i == p_rank) THEN
             WRITE(*,*) 'Process ', p_name,' is rank ', p_rank, 'of ', c_size
       END IF
       call MPI_BARRIER( MPI_COMM_WORLD, ierror)
       END DO
-      PRINT*, "test"
       call MPI_FINALIZE(ierror)
 END PROGRAM HELLO_WORLD
 
