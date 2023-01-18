@@ -1,29 +1,30 @@
 
 program mpi_ping_pong
-   use mpi
-   implicit none
+   USE MPI
+   IMPLICIT NONE
    INTEGER, PARAMETER :: MK = KIND(1.0D0)
-   INTEGER :: ierror, my_rank, num_procs, tag, dest, source, i,j, message_size
-   REAL(MK) :: transfer_time, message, start_time, end_time, total_time, &
+   INTEGER :: ierror, my_rank, num_procs, tag, dest, source, i, j, message_size
+   REAL(MK) :: transfer_time, start_time, end_time, total_time, &
       min_bandwidth, max_bandwidth
    REAL(MK), DIMENSION(2**18) :: message, received_message
-   INTEGER, DIMENSION(18) :: N
+   INTEGER, DIMENSION(200) :: N
 
-   call MPI_Init(ierror)
-   call MPI_Comm_Rank(MPI_COMM_WORLD, my_rank, ierror)
-   call MPI_Comm_Size(MPI_COMM_WORLD, num_procs, ierror)
+   CALL MPI_Init(ierror)
+   CALL MPI_Comm_Rank(MPI_COMM_WORLD, my_rank, ierror)
+   CALL MPI_Comm_Size(MPI_COMM_WORLD, num_procs, ierror)
    !Initialize
    message = 1.0_MK
    tag = 1
    N(1) = 1
-   DO j = 2, 18
-      N(j) = 2**j
+   DO j = 2, 199
+      N(j) = N(j - 1) + 1000
    ENDDO
+   N(100) = 2**18
    IF (my_rank .EQ. 0) THEN
       OPEN(10, file="output.dat", action="write")
    ENDIF
 
-   DO j = 1, 18
+   DO j = 1, SIZE(N)
       message_size = N(j)
       total_time = 0.0_MK
       min_bandwidth = 1.0D20
@@ -58,7 +59,7 @@ program mpi_ping_pong
 
       ENDDO
       IF (my_rank .EQ. 0) THEN
-         WRITE(10, *) message_size, total_time, N*10.0_MK/total_time, min_bandwidth, max_bandwidth
+         WRITE(10, *) message_size, total_time, message_size*10.0_MK/total_time, min_bandwidth, max_bandwidth
          WRITE(10, "(10A)")
       END IF
    ENDDO
