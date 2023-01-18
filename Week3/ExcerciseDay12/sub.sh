@@ -9,12 +9,14 @@
 #BSUB -R "rusage[mem=16GB]"
 #BSUB -B # send notification at start
 #BSUB -N # send notification at end
+
+
 module add studio
 module add mpi/3.1.3-oracle-12u6
 
-mpif90 -free hello_world.90 -o hello_world
-mpirun -n 2 ./ping_pong
+mpif90 -free hello_world.f90 -o hello_world
+mpirun -n 2 ./hello_world
 
 
-mpif90 -free ping_pong.90 -o ping_pong
+mpif90 -free ping_pong.f90 -o ping_pong
 mpirun -n 2 ./ping_pong
