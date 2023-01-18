@@ -11,4 +11,10 @@
 #BSUB -N # send notification at end
 module add studio
 module add mpi/3.1.3-oracle-12u6
-mpirun -np ${LSB_DJOB_NUMPROC} ./a.out
+
+mpif90 -free hello_world.90 -o hello_world
+mpirun -n 2 ./ping_pong
+
+
+mpif90 -free ping_pong.90 -o ping_pong
+mpirun -n 2 ./ping_pong
