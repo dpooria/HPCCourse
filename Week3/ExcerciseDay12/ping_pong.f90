@@ -1,31 +1,37 @@
-      PROGRAM ping_pong
-      USE MPI
-      IMPLICIT NONE
-!,      INTEGER(8) :: MK = kind(1.0D0)
-      INTEGER :: p_rank, c_size, ierror, ilen, m_size 
-      CHARACTER(len=10) :: p_name
-      REAL(8), PARAMETER :: msg=1, tag=1
-      INTEGER, DIMENSION(MPI_STATUS_SIZE) :: stat
-       
-      m_size=1
+PROGRAM ping_pong
+   USE mpi
+   IMPLICIT NONE
+   INTEGER, PARAMETER :: MK = kind(1.0D0)
+   INTEGER :: p_rank, c_size, ierror, ilen, m_size, i, tag_ping, tag_pong
+!    CHARACTER(len=128) :: p_name
+   REAL(MK), DIMENSION(1) :: msg=1.0_MK
+   INTEGER, DIMENSION(MPI_STATUS_SIZE) :: status
+!    Type(MPI_Request) :: request
+      real(MK) :: time
 
-      call MPI_INIT(ierror)
-      call MPI_COMM_RANK(MPI_COMM_WORLD, p_rank, ierror)
+   m_size = 1
+   tag_ping = 10
+   tag_pong = 20
+
+   call MPI_INIT(ierror)
+   call MPI_COMM_RANK(MPI_COMM_WORLD, p_rank, ierror)
 !     call MPI_GET_PROCESSOR_NAME(p_name, ilen, ierror)
-      call MPI_COMM_SIZE(MPI_COMM_WORLD, c_size, ierror)
+   call MPI_COMM_SIZE(MPI_COMM_WORLD, c_size, ierror)
 
 
-
-      IF(p_rank == 0) THEN
-       call MPI_SEND(msg, m_size, MPI_DOUBLE_PRECISION, 1, 1, MPI_COMM_WORLD, ierror)
-       call MPI_IRECV(msg, m_size, MPI_DOUBLE_PRECISION, 0, 1, MPI_COMM_WORLD,stat,ierror)
-       PRINT*, 'ping'
-       ELSEIF(p_rank == 1) THEN
-       call MPI_IRECV(msg, m_size, MPI_DOUBLE_PRECISION, 0, 1, MPI_COMM_WORLD,stat,ierror)
-       call MPI_SEND(msg, m_size, MPI_DOUBLE_PRECISION, 1, 1, MPI_COMM_WORLD, ierror)
-       PRINT*, 'pong'
+   do i = 1, 10
+      IF(mod(p_rank, 2) == 0) THEN
+         call MPI_SEND(msg, m_size, MPI_DOUBLE_PRECISION, 1, tag_ping, MPI_COMM_WORLD, ierror)
+         call MPI_RECV(msg, m_size, MPI_DOUBLE_PRECISION, 1, tag_pong, MPI_COMM_WORLD, status, ierror)
+         PRINT*, 'pong', time
+      !    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+      ELSE
+         call MPI_RECV(msg, m_size, MPI_DOUBLE_PRECISION, 0, tag_ping, MPI_COMM_WORLD,status,ierror)
+         call cpu_time(time)
+         call MPI_SEND(msg, m_size, MPI_DOUBLE_PRECISION, 0, tag_pong, MPI_COMM_WORLD, ierror)
+      !    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
       ENDIF
-  
-       
-      END PROGRAM ping_pong
- 
+   enddo
+   call MPI_FINALIZE(ierror)
+END PROGRAM ping_pong
+

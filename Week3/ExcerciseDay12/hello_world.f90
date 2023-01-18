@@ -4,7 +4,7 @@ PROGRAM hello_world
       IMPLICIT NONE
       
       INTEGER :: p_rank, c_size, ierror, ilen, i
-      CHARACTER(len=10) :: p_name
+      CHARACTER(len=128) :: p_name
 
       CALL MPI_INIT(ierror)
       CALL MPI_COMM_RANK(MPI_COMM_WORLD, p_rank, ierror)
@@ -14,7 +14,11 @@ PROGRAM hello_world
 
       IF(p_rank==0) PRINT*, 'Hello World from rank ', p_rank
 
+<<<<<<< HEAD
       DO i = 0, c_size-1
+=======
+      DO i = 0,10
+>>>>>>> 35a44b785bc7e1106c78358a1d8263bd9eb7aeb5
       IF(i == p_rank) THEN
             WRITE(*,*) 'Process ', p_name,' is rank ', p_rank, 'of ', c_size
       END IF
