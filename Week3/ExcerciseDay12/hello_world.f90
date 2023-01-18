@@ -20,9 +20,8 @@ PROGRAM hello_world
       END IF
       call MPI_BARRIER( MPI_COMM_WORLD, ierror)
       END DO
-
+      PRINT*, "test"
       call MPI_FINALIZE(ierror)
-
 END PROGRAM HELLO_WORLD
 
 
