@@ -28,7 +28,7 @@ PROGRAM pi_mpi
 
    tw1 = MPI_WTIME()
    i = 0
-   DO WHILE(notconverged)
+   DO
       i = i + 1
       CALL RANDOM_NUMBER(rand)
       IF ((rand(1)**2 + rand(2)**2) .LE. 1.0_MK) then
@@ -44,12 +44,12 @@ PROGRAM pi_mpi
                notconverged_root = .FALSE.
                notconverged = .FALSE.
             ENDIF
-
             print*, 'so far so good', pi, N
          ENDIF
          CALL MPI_SCATTER(notconverged_root, 1, MPI_LOGICAL, &
             notconverged, 1, MPI_LOGICAL, 0, MPI_COMM_WORLD, ierror)
          print*, "scatterrrr"
+         IF(.NOT. notconverged) EXIT
       ENDIF
    ENDDO
    tw2 = MPI_WTIME()
