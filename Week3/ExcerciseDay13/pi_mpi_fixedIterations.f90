@@ -7,7 +7,7 @@ PROGRAM pi_mpi
    REAL(MK), DIMENSION(2) :: rand
    INTEGER, ALLOCATABLE, DIMENSION(:) :: seed
    REAL(MK) :: tw1, tw2
-   INTEGER :: p_rank, c_size, ierror, m_size
+   INTEGER :: p_rank, c_size, ierror, m_size, t, seedsize
 
    CALL MPI_INIT(ierror)
    CALL MPI_COMM_RANK(MPI_COMM_WORLD, p_rank, ierror)
@@ -31,10 +31,8 @@ PROGRAM pi_mpi
          l_circle = l_circle + 1
       ENDIF
    ENDDO
-
-   CALL MPI_REDUCE(g_circle, l_circle, 1, MPI_INTEGER, MPI_SUM, 0, MPI_COMM_WORLD, ierror)
-   tw2 = MPI_WTIME()
-
+   CALL MPI_REDUCE(l_circle, g_circle, 1, MPI_INTEGER, MPI_SUM, 0, MPI_COMM_WORLD, ierror)
+         
    IF (p_rank .EQ. 0) then
       do i = 1, N - M
          CALL RANDOM_NUMBER(rand)
@@ -43,6 +41,7 @@ PROGRAM pi_mpi
          ENDIF
       enddo
       pi = 4.0_mk * g_circle / (N + 0.0_MK)
+      tw2 = MPI_WTIME()
       OPEN(10, file="pi_mpi_fixedIterations_res.dat", action="write", position="append")
       WRITE(10, *) pi, c_size, tw2 - tw1, N
       CLOSE(10)

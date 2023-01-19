@@ -16,10 +16,14 @@ module add studio
 module add mpi/3.1.3-oracle-12u6
 
 f90 -free -O3 pi_sequential.f90 -o pi_sequential
+echo "" > pi_sequential_res.dat
 ./pi_sequential
 
-mpif90 -free -O3 pi_mpi_fixedIteration.f90 -o pi_mpi_fixedIteration
+mpif90 -free -O3 pi_mpi_fixedIterations.f90 -o pi_mpi_fixedIterations
 mpif90 -free -O3 pi_mpi.f90 -o pi_mpi
+
+echo "" > pi_mpi_res.dat
+echo "" > pi_mpi_fixedIterations_res.dat
 
 for n in 1 2 4 8 12 16 24
 do
@@ -28,6 +32,6 @@ done
 
 for n in 1 2 4 8 12 16 24
 do
-    mpirun -n ${n} ./pi_mpi_fixedIteration
+    mpirun -n ${n} ./pi_mpi_fixedIterations
 done
 

@@ -22,11 +22,10 @@ PROGRAM pi_sequential
       ENDIF
    ENDDO
    pi = 4.0_mk * circle / (N + 0.0_MK)
-   print *, 'pi =', pi
-
+   
    CALL SYSTEM_CLOCK(tw2, count_rate=rate)
    OPEN(10, file="pi_sequential_res.dat", action="write")
    WRITE(10, *) (tw2 - tw1 + 0.0_MK)/rate ,pi, N
-
+   CLOSE(10)
 END PROGRAM pi_sequential
 
