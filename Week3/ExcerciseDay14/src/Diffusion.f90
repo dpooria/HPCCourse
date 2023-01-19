@@ -1,7 +1,7 @@
 PROGRAM Diffusion
    USE MPI
    USE m_Diffusion_MPI, ONLY: p_rank, c_size, &
-      status, Nx_local, Ny_local, tag
+      status, Nx_local, Ny_local, tag, T_final
    USE m_Diffusion_precision, ONLY: MK, MKS
    USE m_Diffusion, ONLY: temp_new, temp_old, Nx, Ny, Nt, Dt, Dx, Dy, FL, D, vb
    USE m_Diffusion_init, ONLY: init_data
@@ -52,6 +52,7 @@ PROGRAM Diffusion
    IF (p_rank .EQ. 0) THEN
       CALL alloc(temp_new, Nx_local + 1, Ny_local, info)
       CALL alloc(temp_old, Nx_local + 1, Ny_local, info)
+      CALL alloc(T_final, Nx, Ny)
    ELSEIF (p_rank .EQ. c_size - 1) THEN
       Nx_local = Nx - Nx_local * (Nproc - 1)
       CALL alloc(temp_new, Nx_local, Ny_local, info)
@@ -139,13 +140,28 @@ IF(vb) THEN
    ! PRINT '(A,F10.4,A)', "CPU time: ", cpu_tok - cpu_tik, ' Seconds'
    ! PRINT '(A,F10.4,A)', "Wall clock: ", REAL(wall_tok) / count_rate - REAL(wall_tik) / count_rate, ' Seconds'
 ENDIF
- !! Gather all
+ 
+!! Gather all   
+IF(p_rank .EQ. 0) THEN
+   !Recv
+   
+ELSEIF(p_rank .EQ. c_size - 1) THEN
+   DO i = 2, Nx_local
+      CALL MPI_Send(temp_new(i, :), Ny_local, MPI_DOUBLE_PRECISION, 0, tag, MPI_COMM_WORLD, ierror)
+   ENDDO
+ELSE
+   !Send
+   DO i = 2, Nx_local + 1
+      CALL MPI_Send(temp_new(i, :), Ny_local, MPI_DOUBLE_PRECISION, 0, tag, MPI_COMM_WORLD, ierror)
+   ENDDO
+ENDIF
+
 
 DEALLOCATE(temp_new)
 DEALLOCATE(temp_old)
  !TODO deallocate buffers
-CALL DATE_AND_TIME(time=time, date=date)
 IF (vb) THEN
+   CALL DATE_AND_TIME(time=time, date=date)
    WRITE(u, *) "Program Diffusion ended at ", date, "-" ,time
    ! CALL 
    CLOSE(u)
