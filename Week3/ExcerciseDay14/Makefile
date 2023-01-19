@@ -14,21 +14,22 @@ TARGET      = Diffusion
 #----------------------------------------------------------------------
 #  Compiler settings (Linux)
 #----------------------------------------------------------------------
-F77         = gfortran
+# F77         = gfortran
+F77 		= mpif90
 # F77         = f90
 CC          = cc
 DEBUG       = -C
 DEBUG       = 
 OPT         = -O3
-# FFLAGS      = $(OPT) -free $(DEBUG)
-FFLAGS      = $(OPT) -ffree-form $(DEBUG)
+FFLAGS      = $(OPT) -free $(DEBUG)
+# FFLAGS      = $(OPT) -ffree-form $(DEBUG)
 CFLAGS      = -O
 LD          = $(F77)
 LDFLAGS     = 
 CPP         = /lib/cpp
 DEFINE      = 
 LIBS        = 
-SRC			= ./src/v1
+SRC			= src
 
 #----------------------------------------------------------------------
 #  Search path for RCS files                                           
@@ -80,6 +81,7 @@ OBJS =\
 	m_Diffusion_init.o\
 	m_Diffusion_diagnostics.o\
 	m_Diffusion_parse_params.o\
+	m_Diffusion_MPI.o\
 	Diffusion.o
 
 #----------------------------------------------------------------------
@@ -106,6 +108,8 @@ m_Diffusion_diagnostics.o: $(SRC)/m_Diffusion_diagnostics.f90
 	$(F77) $(FFLAGS)  -c $(SRC)/m_Diffusion_diagnostics.f90
 m_Diffusion_parse_params.o: $(SRC)/m_Diffusion_parse_params.f90
 	$(F77) $(FFLAGS)  -c $(SRC)/m_Diffusion_parse_params.f90
+m_Diffusion_MPI.o: $(SRC)/m_Diffusion_MPI.f90
+	$(F77) $(FFLAGS)  -c $(SRC)/m_Diffusion_MPI.f90
 Diffusion.o: $(SRC)/Diffusion.f90 
 	$(F77) $(FFLAGS)  -c $(SRC)/Diffusion.f90
 
