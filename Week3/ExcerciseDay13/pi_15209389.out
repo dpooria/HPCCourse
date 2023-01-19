@@ -5,6 +5,5 @@ Loading python3/3.11.0
   Loading requirement: gcc/11.3.0-binutils-2.38
 Loaded module: studio/12u6
 Loaded module: mpi/3.1.3-oracle-12u6
- 2
- pi = 1.57082384
- WALL time is: 4.519114626105875
+mpirun: Forwarding signal 18 to job
+mpirun: Forwarding signal 18 to job

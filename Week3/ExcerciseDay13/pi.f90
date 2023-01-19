@@ -2,7 +2,7 @@
 
          IMPLICIT NONE
          INTEGER, PARAMETER :: MK = kind(1.0D0)
-         INTEGER :: circle=0, square=0, i, N=10e8
+         INTEGER :: circle=0, i, N=int(1e8)
          REAL :: pi
          REAL, DIMENSION(2) :: rand
          INTEGER :: tw1, tw2
@@ -13,10 +13,8 @@
 
          DO i=1, N
          CALL RANDOM_NUMBER(rand)
-         IF (NORM2(rand) .LE. 1.0_MK) then
+         IF ((rand(1)**2 + rand(2)**2) .LE. 1.0_MK) then
             circle = circle + 1
-         ELSE
-            square = square +1
          ENDIF
          ENDDO
           pi = 4.0_mk * circle / (N + 0.0_MK)

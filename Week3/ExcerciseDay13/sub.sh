@@ -16,4 +16,10 @@ module add studio
 module add mpi/3.1.3-oracle-12u6
 
 mpif90 -free -O3 pi_mpi.f90 -o pi_mpi
+
+# for n in 1 2 4 8 12 16 24
+# do
+#     mpirun -n ${n} ./pi_mpi
+# done
+
 mpirun -n 24 ./pi_mpi
