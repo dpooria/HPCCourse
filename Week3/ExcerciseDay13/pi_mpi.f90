@@ -50,6 +50,7 @@ PROGRAM pi_mpi
    IF (p_rank .EQ. 0) THEN
       OPEN(10, file="pi_mpi_res.dat", action="write", position="append")
       WRITE(10, *) pi, c_size, tw2 - tw1, N
+      CLOSE(10)
    ENDIF
    CALL MPI_FINALIZE(ierror)
 
