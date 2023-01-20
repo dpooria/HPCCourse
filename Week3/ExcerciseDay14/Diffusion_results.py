@@ -4,7 +4,11 @@ import matplotlib.pyplot as plt
 
 
 with open("res.txt", "r") as f:
-    data = f.readlines().split('\n')
+    data = '\\n'.join(f.readlines())
 
+data = data.split('\n')
+
+print(len(data))
+print(data[0])
 
 

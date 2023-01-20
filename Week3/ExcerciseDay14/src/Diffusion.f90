@@ -18,7 +18,7 @@ PROGRAM Diffusion
    REAL(MK):: wall_tik, wall_tok
    CHARACTER(LEN=10) :: time
    CHARACTER(LEN=8) :: date
-   CHARACTER(LEN=512) :: char_buffer
+   CHARACTER(LEN=1024) :: char_buffer
    REAL(MK) :: Dx_coeff, Dy_coeff, x, y
    INTEGER :: amode, fh, size, nx_local_bkp
    INTEGER(KIND=MPI_OFFSET_KIND) :: disp
@@ -152,33 +152,40 @@ PROGRAM Diffusion
       ! PRINT '(A,F10.4,A)', "CPU time: ", cpu_tok - cpu_tik, ' Seconds'
       ! PRINT '(A,F10.4,A)', "Wall clock: ", REAL(wall_tok) / count_rate - REAL(wall_tik) / count_rate, ' Seconds'
    ENDIF
-   
+ 
    ! !! Gather all
-   !Write to file
-   amode = MPI_MODE_WRONLY + MPI_MODE_CREATE
-   info = MPI_INFO_NULL
-   CALL MPI_FILE_OPEN(MPI_COMM_WORLD, output, amode, info, fh, ierror)
-   x = 0.0_MK
-   y = 0.0_MK
-   WRITE(char_buffer, "(3F12.5,A)") x, y, temp_new(1, 1),"\n"
-   CALL MPI_TYPE_SIZE(MPI_CHAR, size, ierror)
-   
-   disp = p_rank * (Nx/c_size) * (Ny_local) * ((LEN_TRIM(char_buffer)) * size) +&
-       p_rank * Ny_local * 10 * size   
-   
-   CALL MPI_FILE_SEEK(fh, disp, MPI_SEEK_SET, ierror)
-   DO j = 1, Ny_local
-      y = REAL(j - 1, KIND=MK) * Dy
-      DO i = 1, Nx_local
-         x = REAL((i - 1) * (p_rank + 1), KIND=MK) * Dx
-         WRITE(char_buffer, "(3F20.5,A)") x, y, temp_new(i, j), "\n"
-         CALL MPI_FILE_WRITE(fh, char_buffer, LEN_TRIM(char_buffer) + 10, &
-            MPI_CHAR, status, ierror)
+   IF (p_rank .EQ. 0) THEN
+      DO k = 0, c_size - 1
       ENDDO
-      ! WRITE(char_buffer, "(10A)") "             "
-      ! CALL MPI_FILE_WRITE(fh, char_buffer, 10, &
-      !    MPI_CHAR, status, ierror)
-   ENDDO
+   ELSE
+      CALL MPI_SEND()
+   ENDIF
+
+   !Write to file
+   ! amode = MPI_MODE_WRONLY + MPI_MODE_CREATE
+   ! info = MPI_INFO_NULL
+   ! CALL MPI_FILE_OPEN(MPI_COMM_WORLD, output, amode, info, fh, ierror)
+   ! x = 0.0_MK
+   ! y = 0.0_MK
+   ! WRITE(char_buffer, "(3F12.5,A)") x, y, temp_new(1, 1),"\n"
+   ! CALL MPI_TYPE_SIZE(MPI_CHAR, size, ierror)
+   
+   ! disp = p_rank * (Nx/c_size) * (Ny_local) * ((LEN_TRIM(char_buffer)) * size) +&
+   !     p_rank * Ny_local * 10 * size   
+   
+   ! CALL MPI_FILE_SEEK(fh, disp, MPI_SEEK_SET, ierror)
+   ! DO j = 1, Ny_local
+   !    y = REAL(j - 1, KIND=MK) * Dy
+   !    DO i = 1, Nx_local
+   !       x = REAL((i - 1) * (p_rank + 1), KIND=MK) * Dx
+   !       WRITE(char_buffer, "(F10.4,F10.4,F10.4,A)") x, y, temp_new(i, j), " \n "
+   !       CALL MPI_FILE_WRITE(fh, char_buffer, LEN_TRIM(char_buffer), &
+   !          MPI_CHAR, status, ierror)
+   !    ENDDO
+   !    ! WRITE(char_buffer, "(10A)") "             "
+   !    ! CALL MPI_FILE_WRITE(fh, char_buffer, 10, &
+   !    !    MPI_CHAR, status, ierror)
+   ! ENDDO
 
    CALL MPI_FILE_CLOSE(fh, ierror)
    DEALLOCATE(temp_new)
