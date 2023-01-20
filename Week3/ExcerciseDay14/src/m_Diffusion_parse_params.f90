@@ -16,7 +16,8 @@ CONTAINS
       ELSE
          file_name = "sample_input.txt"
       ENDIF
-      OPEN(newunit=u, file=TRIM(file_name), action="read")
+      u = 912
+      OPEN(u, file=TRIM(file_name), action="read")
       DO
          READ(u, '(A)', iostat=io) cbuf
          IF (io > 0) THEN
@@ -54,7 +55,7 @@ CONTAINS
          READ(value_expression, *) D
       ELSE IF (var_name_trim .EQ. "dt") THEN
          READ(value_expression, *) Dt
-      ELSE IF (TRIM(var_name_trim) .EQ. "O") THEN
+      ELSE IF (TRIM(var_name_trim) .EQ. "o") THEN
          READ(value_expression, *) output
       ENDIF
    END SUBROUTINE assign_variable

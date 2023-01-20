@@ -1,9 +1,9 @@
 PROGRAM Diffusion
    USE MPI
    USE m_Diffusion_MPI, ONLY: p_rank, c_size, &
-      status, Nx_local, Ny_local, tag, T_final
+      status, Nx_local, Ny_local, tag, ierror, Nproc
    USE m_Diffusion_precision, ONLY: MK, MKS
-   USE m_Diffusion, ONLY: temp_new, temp_old, Nx, Ny, Nt, Dt, Dx, Dy, FL, D, vb
+   USE m_Diffusion, ONLY: temp_new, temp_old, Nx, Ny, Nt, Dt, Dx, Dy, FL, D, vb, output
    USE m_Diffusion_init, ONLY: init_data
    USE m_Diffusion_write, ONLY: write_to_file
    USE m_Diffusion_copy, ONLY: copy_elemental!, copy_new_to_old
@@ -18,7 +18,10 @@ PROGRAM Diffusion
    REAL(MK):: wall_tik, wall_tok
    CHARACTER(LEN=10) :: time
    CHARACTER(LEN=8) :: date
-   REAL(MK) :: Dx_coeff, Dy_coeff
+   CHARACTER(LEN=128) :: char_buffer
+   REAL(MK) :: Dx_coeff, Dy_coeff, x, y
+   INTEGER :: amode, fh, size, info, nx_local_bkp
+   INTEGER(KIND=MPI_OFFSET_KIND) :: disp
 
    ! start parallization
    CALL MPI_INIT(ierror)
@@ -31,12 +34,13 @@ PROGRAM Diffusion
    !    output = TRIM(output) // "_output.txt"
    ! ENDIF
    IF (vb) THEN
+      CALL read_input_params()
       u = 110
-      OPEN(u, file=output, status="replace")
+      char_buffer = "Diffusion_MPI_details_"//output
+      OPEN(u, file=TRIM(char_buffer), status="replace")
       CALL DATE_AND_TIME(time=time, date=date)
       WRITE(u, *) "Program Diffusion started at ", date, "-", time
       WRITE(u, *) "Running the program with ", c_size, " processors in parallel"
-      CALL read_input_params()
       WRITE(u, *) "Running the program with these input parameters:"
       WRITE(u, *) "Nt = ", Nt, "Nx=", Nx, "Ny = ", Ny, "D=", D, "Dt=", Dt
    ENDIF
@@ -52,8 +56,9 @@ PROGRAM Diffusion
    IF (p_rank .EQ. 0) THEN
       CALL alloc(temp_new, Nx_local + 1, Ny_local, info)
       CALL alloc(temp_old, Nx_local + 1, Ny_local, info)
-      CALL alloc(T_final, Nx, Ny)
+      ! CALL alloc(T_final, Nx, Ny)
    ELSEIF (p_rank .EQ. c_size - 1) THEN
+      nx_local_bkp = nx_local
       Nx_local = Nx - Nx_local * (Nproc - 1)
       CALL alloc(temp_new, Nx_local, Ny_local, info)
       CALL alloc(temp_old, Nx_local, Ny_local, info)
@@ -61,7 +66,7 @@ PROGRAM Diffusion
       CALL alloc(temp_new, Nx_local + 2, Ny_local, info)
       CALL alloc(temp_old, Nx_local + 2, Ny_local, info)
    ENDIF
-
+   
    Dx = Lx / (Nx - 1.0_MK)
    Dy = Ly / (Ny - 1.0_MK)
 
@@ -75,7 +80,6 @@ PROGRAM Diffusion
    ENDIF
    Dx_coeff = Dt * D / Dx**2
    Dy_coeff = Dt * D / Dy**2
-
    ! Initialize
    !Assign the Drichlet boundary conditions
    ! y
@@ -111,65 +115,112 @@ PROGRAM Diffusion
             ENDDO
          ENDDO
       ENDIF
+
       ! update ghosts
       IF(p_rank .EQ. 0) THEN
-         CALL MPI_SendRecv(temp_new(Nx_local, :), Ny_local, MPI_DOUBLE_PRECISION,&
-            p_rank + 1, tag, temp_new(Nx_local + 1, :), Ny_local, MPI_DOUBLE_PRECISION, p_rank + 1, tag, &
+         CALL MPI_SendRecv(temp_new(Nx_local, 2:Ny_local-1), Ny_local-2, MPI_DOUBLE_PRECISION,&
+            p_rank + 1, tag, temp_new(Nx_local + 1, 2:Ny_local), Ny_local-2,&
+             MPI_DOUBLE_PRECISION, p_rank + 1, tag, &
             MPI_COMM_WORLD, status, ierror)
          !RECEIVE
       ELSEIF (p_rank .EQ. c_size - 1) THEN
-         CALL MPI_SendRecv(temp_new(2, :), Ny_local, MPI_DOUBLE_PRECISION, p_rank - 1, tag, &
-            temp_new(1, :), Ny_local, MPI_DOUBLE_PRECISION, p_rank - 1, tag,&
+         CALL MPI_SendRecv(temp_new(2, 2:Ny_local - 1), Ny_local - 2, &
+            MPI_DOUBLE_PRECISION, p_rank - 1, tag, &
+            temp_new(1, 2:Ny_local - 1), Ny_local - 2,&
+            MPI_DOUBLE_PRECISION, p_rank - 1, tag,&
             MPI_COMM_WORLD, status, ierror)
       ELSE
          !left proc
-         CALL MPI_SendRecv(temp_new(2, :), Ny_local, MPI_DOUBLE_PRECISION,&
-            p_rank - 1, tag, temp_new(1, :), Ny_local, MPI_DOUBLE_PRECISION, p_rank - 1, tag, &
+         CALL MPI_SendRecv(temp_new(2, 2:Ny_local - 1), Ny_local - 2, MPI_DOUBLE_PRECISION,&
+            p_rank - 1, tag, temp_new(1, 2:Ny_local - 1), Ny_local - 2,&
+            MPI_DOUBLE_PRECISION, p_rank - 1, tag, &
             MPI_COMM_WORLD, status, ierror)
          !right proc
-         CALL MPI_SendRecv(temp_new(Nx_local + 1, :), Ny_local, MPI_DOUBLE_PRECISION,&
-            p_rank + 1, tag, temp_new(Nx_local + 2, :), Ny_local, MPI_DOUBLE_PRECISION, p_rank + 1, tag, &
+         CALL MPI_SendRecv(temp_new(Nx_local + 1, 2:Ny_local - 1), &
+            Ny_local - 2, MPI_DOUBLE_PRECISION,&
+            p_rank + 1, tag, temp_new(Nx_local + 2, 2:Ny_local),&
+             Ny_local - 2, MPI_DOUBLE_PRECISION, p_rank + 1, tag, &
             MPI_COMM_WORLD, status, ierror)
       ENDIF
    ENDDO
-ENDDO
-wall_tok = MPI_WTime()
-IF(vb) THEN
-   WRITE(u, '(A,F10.4,A)') "Wall clock: ", wall_tok - wall_tik, ' Seconds'
-   ! CALL close_diagnostics_file()
-   ! PRINT '(A,F10.4,A)', "CPU time: ", cpu_tok - cpu_tik, ' Seconds'
-   ! PRINT '(A,F10.4,A)', "Wall clock: ", REAL(wall_tok) / count_rate - REAL(wall_tik) / count_rate, ' Seconds'
-ENDIF
- 
-!! Gather all   
-IF(p_rank .EQ. 0) THEN
-   !Recv
-   
-ELSEIF(p_rank .EQ. c_size - 1) THEN
-   DO i = 2, Nx_local
-      CALL MPI_Send(temp_new(i, :), Ny_local, MPI_DOUBLE_PRECISION, 0, tag, MPI_COMM_WORLD, ierror)
-   ENDDO
-ELSE
-   !Send
-   DO i = 2, Nx_local + 1
-      CALL MPI_Send(temp_new(i, :), Ny_local, MPI_DOUBLE_PRECISION, 0, tag, MPI_COMM_WORLD, ierror)
-   ENDDO
-ENDIF
+   wall_tok = MPI_WTime()
+   IF(vb) THEN
+      WRITE(u, '(A,F10.4,A)') "Wall clock: ", wall_tok - wall_tik, ' Seconds'
+      CLOSE(u)
+      ! CALL close_diagnostics_file()
+      ! PRINT '(A,F10.4,A)', "CPU time: ", cpu_tok - cpu_tik, ' Seconds'
+      ! PRINT '(A,F10.4,A)', "Wall clock: ", REAL(wall_tok) / count_rate - REAL(wall_tik) / count_rate, ' Seconds'
+   ENDIF
 
+   ! !! Gather all
+   !Write to file
+   amode = MPI_MODE_WRONLY + MPI_MODE_CREATE
+   info = MPI_INFO_NULL
+   CALL MPI_FILE_OPEN(MPI_COMM_WORLD, output, amode, info, fh, ierror)
+   PRINT*, "POPEN", p_rank, ierror
+   x = 0.0_MK
+   y = 0.0_MK
+   WRITE(char_buffer, "(3F12.5,A)") x, y, temp_new(1, 1),"\n"
+   ! char_buffer = ""
+   ! CALL MPI_TYPE_SIZE(MPI_CHAR, size, ierror)
+   ! disp = p_rank * (Nx_local) * (Ny_local) * ((LEN_TRIM(char_buffer))* size) +&
+   !     p_rank * Ny_local * 10 * size   
+   CALL MPI_TYPE_SIZE(MPI_DOUBLE_PRECISION, size, ierror)
+   IF (p_rank .EQ. c_size - 1) THEN
+      disp = p_rank * (Nx_local_bkp) * (Ny_local) * size
+   ELSE
+      disp = p_rank * (Nx_local) * (Ny_local) * size
+   ENDIF
+   CALL MPI_FILE_SEEK(fh, disp, MPI_SEEK_SET, ierror)
+   PRINT*, "SEEK", p_rank, ierror
+   call MPI_FILE_WRITE(fh, temp_new, nx_local * ny_local, MPI_DOUBLE_PRECISION, status, ierror)
+   ! DO j = 1, Ny_local
+   !    ! y = REAL(j - 1, KIND=MK) * Dy
+   !    DO i = 1, Nx_local
+   !       ! x = REAL((i - 1) * (p_rank + 1), KIND=MK) * Dx
+   !       ! char_buffer = ""
+   !       ! WRITE(char_buffer, "(3F12.5,A)") x, y, temp_new(i, j), "\n"
+   !       ! CALL MPI_FILE_WRITE(fh, char_buffer, LEN_TRIM(char_buffer) + 10, &
+   !       !    MPI_CHAR, status, ierror)
+   !       CALL MPI_FILE_WRITE(fh, temp_new(i, j), 1, &
+   !          MPI_DOUBLE_PRECISION, status, ierror)
+   !    ENDDO
+   !    ! char_buffer = ""
+   !    ! WRITE(char_buffer, "(10A)")
+   !    ! CALL MPI_FILE_WRITE(fh, char_buffer, 10, &
+   !    !    MPI_CHAR, status, ierror)
+   ! ENDDO
 
-DEALLOCATE(temp_new)
-DEALLOCATE(temp_old)
- !TODO deallocate buffers
-IF (vb) THEN
-   CALL DATE_AND_TIME(time=time, date=date)
-   WRITE(u, *) "Program Diffusion ended at ", date, "-" ,time
-   ! CALL 
-   CLOSE(u)
-ENDIF
+   CALL MPI_FILE_CLOSE(fh, ierror)
 
- ! End parallization
+   ! IF(p_rank .EQ. 0) THEN
+   !    !Recv
 
-CALL MPI_FINALIZE(ierror)
+   ! ELSEIF(p_rank .EQ. c_size - 1) THEN
+   !    DO i = 2, Nx_local
+   !       CALL MPI_Send(temp_new(i, :), Ny_local, MPI_DOUBLE_PRECISION, 0, tag, MPI_COMM_WORLD, ierror)
+   !    ENDDO
+   ! ELSE
+   !    !Send
+   !    DO i = 2, Nx_local + 1
+   !       CALL MPI_Send(temp_new(i, :), Ny_local, MPI_DOUBLE_PRECISION, 0, tag, MPI_COMM_WORLD, ierror)
+   !    ENDDO
+   ! ENDIF
+
+   DEALLOCATE(temp_new)
+   DEALLOCATE(temp_old)
+   !TODO deallocate buffers
+   IF (vb) THEN
+      CALL DATE_AND_TIME(time=time, date=date)
+      WRITE(u, *) "Program Diffusion ended at ", date, "-" ,time
+      ! CALL
+      CLOSE(u)
+   ENDIF
+
+   ! End parallization
+
+   CALL MPI_FINALIZE(ierror)
 
 END PROGRAM Diffusion
+
 

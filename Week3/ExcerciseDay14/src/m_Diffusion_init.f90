@@ -14,12 +14,18 @@ CONTAINS
       ENDIF
       IF ((p_rank .EQ. 0) .OR. (p_rank .EQ. (c_size - 1))) THEN
          DO j = 1, Ny_local
-            DO i = 1, Nx_loca + 1
+            DO i = 1, Nx_local + 1
                temp_new(i, j) = T0
                temp_old(i, j) = T0
             ENDDO
          ENDDO
       ELSE
+         DO j = 1, Ny_local
+            DO i = 1, Nx_local + 2
+               temp_new(i, j) = T0
+               temp_old(i, j) = T0
+            ENDDO
+         ENDDO
       ENDIF
       call apply_boundary_conditions(T_boundary)
    END SUBROUTINE init_data

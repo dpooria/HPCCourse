@@ -1,0 +1,7 @@
+ Program Diffusion started at 20230120-143410.702
+ Running the program with  3  processors in parallel
+ Running the program with these input parameters:
+ Nt =  100 Nx= 400 Ny =  400 D= 1.0 Dt= 1.0E-4
+ Fourier limit is: 1.570341894837344E-6
+ Dx =  2.506265664160401E-3 ;Dy =  2.506265664160401E-3 ;Dt =  1.0E-4
+Wall clock:     0.0388 Seconds

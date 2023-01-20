@@ -73,6 +73,7 @@ all: $(TARGET)
 #----------------------------------------------------------------------
 OBJS =\
 	m_Diffusion_precision.o\
+	m_Diffusion_MPI.o\
 	m_Diffusion.o\
 	m_Diffusion_copy.o\
 	m_Diffusion_write.o\
@@ -81,7 +82,6 @@ OBJS =\
 	m_Diffusion_init.o\
 	m_Diffusion_diagnostics.o\
 	m_Diffusion_parse_params.o\
-	m_Diffusion_MPI.o\
 	Diffusion.o
 
 #----------------------------------------------------------------------

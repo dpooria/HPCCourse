@@ -11,7 +11,8 @@ CONTAINS
       INTEGER, INTENT(IN) :: time_step
       REAL(MK) :: min_t
       IF (first_time) THEN
-         open(newunit=u, file='diag.dat', status='replace')
+         u = 911
+         open(u, file='diag.dat', status='replace')
          first_time = .FALSE.
       ENDIF
       min_t = MINVAL(temp_new)

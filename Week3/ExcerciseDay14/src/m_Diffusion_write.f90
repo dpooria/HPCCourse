@@ -31,7 +31,7 @@ CONTAINS
             fname = 'outputs/diff.dat'
          ENDIF
       ENDIF
-
+      u = 130
       arr_ptr => temp_new
       IF(PRESENT(array)) THEN
          arr_ptr => array
@@ -43,7 +43,7 @@ CONTAINS
          ENDIF
       ENDIF
       fname_len = LEN_TRIM(fname)
-      OPEN(newunit=u, file=fname(1:fname_len), status='replace')
+      OPEN(u, file=fname(1:fname_len), status='replace')
 
       DO j = 1, Ny
          DO i = 1, Nx
@@ -69,7 +69,8 @@ CONTAINS
 
       arr_ptr => array
       fname_len = LEN_TRIM(fname)
-      OPEN(newunit=u, file=fname(1:fname_len), status='replace')
+      u = 110
+      OPEN(u, file=fname(1:fname_len), status='replace')
 
       DO j = 1, Ny
          DO i = 1, Nx
@@ -91,10 +92,10 @@ CONTAINS
       ELSE
          fname = 'outputs/diff.dat'
       ENDIF
-
+      u = 120
       arr_ptr => array
       fname_len = LEN_TRIM(fname)
-      OPEN(newunit=u, file=fname(1:fname_len), status='replace')
+      OPEN(u, file=fname(1:fname_len), status='replace')
 
       DO j = 1, Ny
          DO i = 1, Nx
