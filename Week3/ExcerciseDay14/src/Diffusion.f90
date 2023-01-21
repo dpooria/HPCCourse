@@ -1,7 +1,7 @@
 PROGRAM Diffusion
    USE MPI
    USE m_Diffusion_MPI, ONLY: p_rank, c_size, &
-      status, Nx_local, Ny_local, tag, ierror, Nproc
+      status, Nx_local, Ny_local, tag, ierror, Nproc, send_buffer
    USE m_Diffusion_precision, ONLY: MK, MKS
    USE m_Diffusion, ONLY: temp_new, temp_old, Nx, Ny, Nt, Dt, Dx, Dy, FL, D, vb, output
    USE m_Diffusion_init, ONLY: init_data
@@ -20,8 +20,6 @@ PROGRAM Diffusion
    CHARACTER(LEN=8) :: date
    CHARACTER(LEN=1024) :: char_buffer
    REAL(MK) :: Dx_coeff, Dy_coeff, x, y
-   INTEGER :: amode, fh, size, nx_local_bkp
-   INTEGER(KIND=MPI_OFFSET_KIND) :: disp
 
    ! start parallization
    CALL MPI_INIT(ierror)
@@ -59,7 +57,6 @@ PROGRAM Diffusion
       CALL alloc(temp_old, Nx_local + 1, Ny_local, info)
       ! CALL alloc(T_final, Nx, Ny)
    ELSEIF (p_rank .EQ. c_size - 1) THEN
-      nx_local_bkp = nx_local
       Nx_local = Nx - Nx_local * (Nproc - 1)
       CALL alloc(temp_new, Nx_local, Ny_local, info)
       CALL alloc(temp_old, Nx_local, Ny_local, info)
@@ -155,10 +152,51 @@ PROGRAM Diffusion
  
    ! !! Gather all
    IF (p_rank .EQ. 0) THEN
-      DO k = 0, c_size - 1
+      OPEN(777, file=ouptut, status="replace")
+      DO j = 1, Ny_local
+         y = REAL(j - 1, KIND=MK) * Dy
+         DO i = 1, Nx_local + 1
+            x = REAL((i - 1), KIND=MK) * Dx
+            WRITE(777, '(3F12.4)') x, y, temp_new(i, j)
+         ENDDO
+         WRITE(777, '(10A)')
       ENDDO
+      ALLOCATE(send_buffer(Nx_local, Ny_local))
+      DO k = 1, c_size - 2
+         CALL MPI_Recv(
+         send_buffer,&
+            Nx_local * Ny_local, MPI_DOUBLE_PRECISION, k, tag, &
+            MPI_COMM_WORLD, status, ierror)
+         DO j = 1, Ny_local
+            y = REAL(j - 1, KIND=MK) * Dy
+            DO i = 1, Nx_local + 1
+               x = REAL((i - 1) + k * Nx_local, KIND=MK) * Dx
+               WRITE(777, '(3F12.4)') x, y, send_buffer(i, j)
+            ENDDO
+            WRITE(777, '(10A)')
+         ENDDO
+      ENDDO
+      DEALLOCATE(send_buffer)
+
+      ALLOCATE(send_buffer(Nx - Nx_local * (Nproc - 1) + 1, Ny_local))
+      CALL MPI_Recv(send_buffer,&
+         (Nx - Nx_local * (Nproc - 1) + 1) * Ny_local, MPI_DOUBLE_PRECISION, &
+         c_size - 1, tag, &
+         MPI_COMM_WORLD, status, ierror)
+      DO j = 1, Ny_local
+         y = REAL(j - 1, KIND=MK) * Dy
+         DO i = 1, Nx_local + 1
+            x = REAL((i - 1) + k * Nx_local, KIND=MK) * Dx
+            WRITE(777, '(3F12.4)') x, y, send_buffer(i, j)
+         ENDDO
+         WRITE(777, '(10A)')
+      ENDDO
+      DEALLOCATE(send_buffer)
+      CLOSE(777)
    ELSE
-      CALL MPI_SEND()
+      CALL MPI_SEND(temp_new(2:Nx_local + 1, Ny_local), &
+         (Nx_local * Ny_local), MPI_DOUBLE_PRECISION,&
+         0, tag, MPI_COMM_WORLD, ierror)
    ENDIF
 
    !Write to file
