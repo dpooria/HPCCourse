@@ -1,8 +1,8 @@
 
 Nt = 100
-Nx = 400
-Ny = 400
+Nx = 4096
+Ny = 4096
 D = 1.0
-Dt = 1E-4
-O = "res.txt"
+Dt = 1E-8
+vb = .FALSE.
 

@@ -29,7 +29,7 @@ LDFLAGS     =
 CPP         = /lib/cpp
 DEFINE      = 
 LIBS        = 
-SRC			= src
+SRC			= src/mpi
 
 #----------------------------------------------------------------------
 #  Search path for RCS files                                           

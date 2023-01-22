@@ -20,13 +20,12 @@ module add studio
 module add mpi/3.1.3-oracle-12u6
 lscpu
 
-#Jacobi
-# make one full data to ensure the results are correct
+
 cat > sample_input.txt <<- END
 
-Nt = 100
-Nx = 4097
-Ny = 4097
+Nt = 1000
+Nx = 4096
+Ny = 4096
 D = 1.0
 Dt = 1E-8
 O = "res.txt"
@@ -37,4 +36,4 @@ echo "" > "res.txt"
 
 make new
 
-mpirun -np 2 ./Diffusion "Diffusion_res_np2"
+mpirun -np 2 ./Diffusion

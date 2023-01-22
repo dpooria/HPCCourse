@@ -1,0 +1,8 @@
+ Program Diffusion started at 20230122-112830.238
+ Running the program with these input parameters:
+ Nt =          100 Nx=        4096 Ny =         4096 D=   1.0000000000000000      Dt=   1.0000000000000000E-008
+ Fourier limit is:   1.4908439816864725E-008
+ Dx =    2.4420024420024420E-004 ;Dy =    2.4420024420024420E-004 ;Dt =    1.0000000000000000E-008
+CPU time:    57.0071 Seconds
+Wall clock:    90.7500 Seconds
+ Program Diffusion ended at 20230122-113001.143
