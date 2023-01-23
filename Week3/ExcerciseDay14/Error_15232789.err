@@ -1,0 +1,41 @@
+Loaded dependency [python3/3.11.0]: gcc/11.3.0-binutils-2.38
+Loaded module: python3/3.11.0
+
+Loading python3/3.11.0
+  Loading requirement: gcc/11.3.0-binutils-2.38
+Loaded module: studio/12u6
+Loaded module: mpi/3.1.3-oracle-12u6
+[n-62-21-92:00635] Read -1, expected 67076096, errno = 14
+[n-62-21-92:00636] *** Process received signal ***
+[n-62-21-92:00636] Signal: Segmentation fault (11)
+[n-62-21-92:00636] Signal code: Invalid permissions (2)
+[n-62-21-92:00636] Failing at address: 0x7f3f07f755a8
+[n-62-21-92:00636] [ 0] /lib64/libpthread.so.0(+0xf630)[0x7f3f1ed30630]
+[n-62-21-92:00636] [ 1] /lib64/libc.so.6(+0x154c19)[0x7f3f1e7a5c19]
+[n-62-21-92:00636] [ 2] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/openmpi/mca_btl_vader.so(+0x2ff5)[0x7f3f0a970ff5]
+[n-62-21-92:00636] [ 3] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/openmpi/mca_pml_ob1.so(+0x18443)[0x7f3f09c4c443]
+[n-62-21-92:00636] [ 4] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/openmpi/mca_pml_ob1.so(mca_pml_ob1_send_request_schedule_once+0x1b1)[0x7f3f09c4e741]
+[n-62-21-92:00636] [ 5] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/openmpi/mca_pml_ob1.so(+0x18ce0)[0x7f3f09c4cce0]
+[n-62-21-92:00636] [ 6] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/openmpi/mca_pml_ob1.so(mca_pml_ob1_send_request_process_pending+0x7c)[0x7f3f09c4cf3c]
+[n-62-21-92:00636] [ 7] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/openmpi/mca_pml_ob1.so(+0x19791)[0x7f3f09c4d791]
+[n-62-21-92:00636] [ 8] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/openmpi/mca_btl_vader.so(+0x39d2)[0x7f3f0a9719d2]
+[n-62-21-92:00636] [ 9] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/openmpi/mca_btl_vader.so(mca_btl_vader_poll_handle_frag+0x192)[0x7f3f0a973622]
+[n-62-21-92:00636] [10] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/openmpi/mca_btl_vader.so(+0x5692)[0x7f3f0a973692]
+[n-62-21-92:00636] [11] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/openmpi/mca_btl_vader.so(+0x58f5)[0x7f3f0a9738f5]
+[n-62-21-92:00636] [12] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/libopen-pal.so.40(opal_progress+0x47)[0x7f3f1e379027]
+[n-62-21-92:00636] [13] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/openmpi/mca_pml_ob1.so(+0xb965)[0x7f3f09c3f965]
+[n-62-21-92:00636] [14] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/openmpi/mca_pml_ob1.so(mca_pml_ob1_send+0x2cd)[0x7f3f09c411fd]
+[n-62-21-92:00636] [15] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/libmpi.so.40(MPI_Send+0x160)[0x7f3f204a65e0]
+[n-62-21-92:00636] [16] /appl/oracle/12u6/openmpi/3.1.3-lsf10/lib/libmpi_mpifh.so.40(MPI_Send_f08+0x5c)[0x7f3f2084543c]
+[n-62-21-92:00636] [17] ./Diffusion[0x407206]
+[n-62-21-92:00636] [18] ./Diffusion[0x40520f]
+[n-62-21-92:00636] [19] /lib64/libc.so.6(__libc_start_main+0xf5)[0x7f3f1e673555]
+[n-62-21-92:00636] [20] ./Diffusion[0x4013a2]
+[n-62-21-92:00636] *** End of error message ***
+--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun noticed that process rank 1 with PID 0 on node n-62-21-92 exited on signal 11 (Segmentation fault).
+--------------------------------------------------------------------------

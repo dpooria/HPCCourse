@@ -47,7 +47,7 @@ CONTAINS
 
       DO j = 1, Ny
          DO i = 1, Nx
-            WRITE(u, '(3E12.4)') REAL(i-1) * Dx, REAL(j-1)*Dy, temp_new(i, j)
+            WRITE(u, '(F20.4,F20.4,F20.4)') REAL(i-1) * Dx, REAL(j-1)*Dy, temp_new(i, j)
          ENDDO
          WRITE (u, '(10A)')
       ENDDO
@@ -73,7 +73,7 @@ CONTAINS
 
       DO j = 1, Ny
          DO i = 1, Nx
-            WRITE(u, '(3E12.4)') REAL(i-1) * Dx, REAL(j-1)*Dy, temp_new(i, j)
+            WRITE(u, '(F20.4,F20.4,F20.4)') REAL(i-1) * Dx, REAL(j-1)*Dy, temp_new(i, j)
          ENDDO
          WRITE (u, '(10A)')
       ENDDO
@@ -86,10 +86,11 @@ CONTAINS
       INTEGER :: i, j, u, fname_len
       REAL(MKD), POINTER, DIMENSION(:, :) :: arr_ptr
       IF (PRESENT(file_name)) THEN
-         fname_len = LEN_TRIM(file_name)
-         fname(1:fname_len) = file_name(1:fname_len)
+         ! fname_len = LEN_TRIM(file_name)
+         ! fname(1:fname_len) = file_name(1:fname_len)
+         fname = file_name
       ELSE
-         fname = 'outputs/diff.dat'
+         fname = 'diff.dat'
       ENDIF
 
       arr_ptr => array
@@ -98,7 +99,7 @@ CONTAINS
 
       DO j = 1, Ny
          DO i = 1, Nx
-            WRITE(u, '(3E12.4)') REAL(i-1) * Dx, REAL(j-1)*Dy, temp_new(i, j)
+            WRITE(u, '(F20.4,F20.4,F20.4)') REAL(i-1) * Dx, REAL(j-1)*Dy, temp_new(i, j)
          ENDDO
          WRITE (u, '(10A)')
       ENDDO

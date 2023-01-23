@@ -8,7 +8,7 @@ MODULE m_Diffusion_MPI
     INTEGER, DIMENSION(MPI_STATUS_SIZE) :: status
     INTEGER :: Nx_local, Ny_local, MPI_MK
     INTEGER, PARAMETER:: tag = 123
-    REAL(MK), DIMENSION(:, :) :: send_buffer 
+    REAL(MK), DIMENSION(:, :), ALLOCATABLE :: send_buffer 
  
  END MODULE m_Diffusion_MPI
  
